@@ -22,13 +22,13 @@ bool Red::ExisteLinea(strng* linea)
 {
     for(short int i=0; Lineas[i]==EndLineas; i++)
     {
-        if(Lineas[i].getNombrelinea == *linea)
+        if(Lineas[i].getNombre == *linea)
         {
             return true;
         }
     }
 
-    if((*EndLineas).getNombrelinea == *linea)
+    if((*EndLineas).getNombre == *linea)
     {
         return true;
     }
@@ -49,6 +49,72 @@ bool Red::ExisteEstacion(string* estacion)
     if((*EndLineas).Buscarestacion(estacion) == true)
     {
         return true;
+    }
+
+    return false;
+}
+
+bool Red::EstacionEnLinea(string* estacion, string* linea)
+{
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].getNombre() == *linea)
+        {
+            if(Lineas[i].Buscarestacion(estacion) == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    if((*EdnLineas).getNombre() == *linea)
+    {
+        if((*EndLineas).Buscarestacion(estacion) == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+bool Red::EsTransferencia(string* estacion)
+{
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].Buscarestacion(estacion) == true)
+        {
+            return Lineas[i].EstacionTransferencia(estacion);
+        }
+    }
+
+    if((*EndLineas).Buscarestacion(estacion) == true)
+    {
+        return (*EndLineas).EstacionTransferencia(estacion);
+    }
+
+    return false;
+}
+
+bool Red::Transferencia(string* linea)
+{
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].getNombre() == *linea)
+        {
+            return Lineas[i].HayTransferencia();
+        }
+    }
+
+    if((*EndLineas).getNombre() == *linea)
+    {
+        return (*EndLineas).HayTransferencia();
     }
 
     return false;
@@ -133,7 +199,7 @@ void Red::DelLinea(string* Linea)
     {
         if(i==0)
         {
-            if(Lineas[i].getNombrelinea() == *Linea)
+            if(Lineas[i].getNombre() == *Linea)
             {
                 for(short int j=i; Lineas[j]==EndLineas; i++)
                 {
@@ -147,7 +213,7 @@ void Red::DelLinea(string* Linea)
             }
         }
 
-        if(Lineas[i+1].getNombrelinea() == *Linea)
+        if(Lineas[i+1].getNombre() == *Linea)
         {
             for(short int j=(i+1); Lineas[j]==EndLineas; i++)
                 {
@@ -159,6 +225,42 @@ void Red::DelLinea(string* Linea)
 
                 break;
         }
+    }
+}
+
+void AgregarEstacion(string* linea, Estacion* estacion, string* estAnt)
+{
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].getNombre() == *linea)
+        {
+            linea[i].Addestacion(estacion, estAnt);
+            break;
+        }
+    }
+
+    if((*EdnLineas).getNombre() == *linea)
+    {
+        (*EdnLineas).Addestacion(estacion, estAnt);
+        break;
+    }
+}
+
+void BorrarEstacion(string* linea, string* estacion)
+{
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].getNombre() == *linea)
+        {
+            linea[i].Delestacion(estacion);
+            break;
+        }
+    }
+
+    if((*EdnLineas).getNombre() == *linea)
+    {
+        (*EdnLineas).Delestacion(estacion);
+        break;
     }
 }
 
@@ -185,6 +287,11 @@ short int Red::CuantasLineas(void)
     contador++;
 
     return contador;
+}
+
+short int Red::CuantasEstaciones(void)
+{
+wdwfewfwef
 }
 
 int Red::CalcularTiempo(string* estSalida, string* estDestino)

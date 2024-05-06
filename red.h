@@ -1,36 +1,33 @@
 #ifndef RED_H
 #define RED_H
 
-#include <string>
-#include "Linea.h"
-#include "Estacion.h"
+#include "linea.h"
 
-using namespace std;
-
-class Red
+class red
 {
 private:
     string Nombre;
-    Linea* Lineas;
-    Linea* EndLineas;
+    string* Transferencias;
+    linea* Lineas;
+    linea* EndLineas;
 
 public:
-    Red(string* nombre);
-    string GetNombre(void);
-    void SetNombre(string nombre);
+    red(string* nombre);
+    string getNombre(void);
+    void SetNombre(string* nombre);
     bool ExisteLinea(string* linea);
     bool ExisteEstacion(string* estacion);
     bool EstacionEnLinea(string* estacion, string* linea);
     bool EsTransferencia(string* estacion);
     bool Transferencia(string* linea);
-    void AddLinea(Linea* linea, string* estacionTransferencia);
+    void AddLinea(linea* Linea, estacion* estacionTransferencia);
     void DelLinea(string* linea);
-    void AgregarEstacion(string* linea, Estacion* estacion);
+    void AgregarEstacion(string* linea, estacion* Estacion, string* estAnt);
     void BorrarEstacion(string* linea, string* estacion);
     short int CuantasLineas(void);
     short int CuantasEstaciones(void);
     int CalcularTiempo(string* estSalida, string* estDestino);
-    ~Red();
+    ~red();
 };
 
 #endif // RED_H

@@ -1,10 +1,11 @@
 #include "red.h"
 
-Red::Red(string* nombre, short int* cantLineas)
+Red::Red(string* nombre)
 {
    Nombre = *nombre; 
-   Lineas = new Linea[*cantLineas];
-   EndLineas = Lineas[*cantLineas-1];
+   Lineas = new Linea[1];
+   Lineas[0] = NULL;
+   EndLineas = Lineas[0];
 }
 
 string Red::GetNombre(void)
@@ -19,10 +20,8 @@ void Red::SetNombre(string* nombre)
 
 bool Red::ExisteLinea(strng* linea)
 {
-
     for(short int i=0; Lineas[i]==EndLineas; i++)
     {
-
         if(Lineas[i].getNombrelinea == *linea)
         {
             return true;
@@ -55,8 +54,21 @@ bool Red::ExisteEstacion(string* estacion)
     return false;
 }
 
-void Red::AddLinea(Linea* linea, string* estacionTransferencia)
+void Red::AddLinea(Linea* linea, string* estacionTransferencia) //FALTA HACER QUE LA ESATACIÓN SEA DE TRANFERENCIA EN LAS DEMAS LINEAS.
 {
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].Buscarestacion(estacionTransferencia) == true)
+        {
+            Lineas[i].hacerTranferencia(estacionTransferencia); //CONVERTIR A TRANSFERENCIA
+        }
+    }
+
+    if((*EndLineas).Buscarestacion(estacionTransferencia) == true)
+    {
+         (*EndLineas).hacerTranferencia(estacionTransferencia); //CONVERTIR A TRANSFERENCIA
+    }
+
     string Extremo = "-1";
     short int TmpEst = -1;
 
@@ -68,22 +80,20 @@ void Red::AddLinea(Linea* linea, string* estacionTransferencia)
             {
                 if(Lineas[i] == NULL)
                 {
-                    Lineas[i] = linea;
+                    Lineas[i] = *linea;
                     Lineas[i].Addestacion(estacionTransferencia, &Extremo, &TmpEst, &TmpEst);
+                    Lineas[i].hacerTranferencia(estacionTransferencia);
+                    break;
                 }
             }
             
             if(Lineas[i+1] == NULL)
             {
-                Lineas[i+1] = linea;
+                Lineas[i+1] = *linea;
                 Lineas[i+1].Addestacion(estacionTransferencia, &Extremo, &TmpEst, &TmpEst);
+                Lineas[i+1].hacerTranferencia(estacionTransferencia);
+                break;
             }
-        }
-
-        if((*EndLineas) == NULL)
-        {
-            EndLineas = linea;
-            (*EndLineas).Addestacion(estacionTransferencia, &Extremo, &TmpEst, &TmpEst);
         }
     }
     else
@@ -106,7 +116,11 @@ void Red::AddLinea(Linea* linea, string* estacionTransferencia)
         }
 
         AuxLineas[contador] = *linea;
+        AuxLineas[contador].Addestacion(estacionTransferencia, &Extremo, &TmpEst, &TmpEst);
+        AuxLineas[contador].hacerTranferencia(estacionTransferencia);
 
+        delete[] Lineas;
+        Lineas = AuxLineas;
         EdnLineas = &(AuxLineas[contador]);
     }
 }
@@ -121,21 +135,30 @@ void Red::DelLinea(string* Linea)
         {
             if(Lineas[i].getNombrelinea() == *Linea)
             {
-                Aux = i;
+                for(short int j=i; Lineas[j]==EndLineas; i++)
+                {
+                    Lineas[j].~Linea();
+                    Lineas[j] = Lineas[j+1];
+                }
+
+                *EndLineas = NULL;
+
                 break;
             }
         }
 
         if(Lineas[i+1].getNombrelinea() == *Linea)
         {
-            Aux = i+1;
-            break;
+            for(short int j=(i+1); Lineas[j]==EndLineas; i++)
+                {
+                    Lineas[j].~Linea();
+                    Lineas[j] = Lineas[j+1];
+                }
+
+                *EndLineas = NULL;
+
+                break;
         }
-    }
-
-    for(short int i=Aux; Lineas[i]==EndLineas; i++)
-    {
-
     }
 }
 
@@ -144,8 +167,7 @@ short int Red::CuantasLineas(void)
     short int contador = 0;
 
     for(short int i=0; Lineas[i]==EndLineas; i++)
-    {
-        
+    {  
         if(i==0)
         {
             if(Lineas[i] != NULL)
@@ -165,12 +187,31 @@ short int Red::CuantasLineas(void)
     return contador;
 }
 
-int Red::CalcularTiempo(string* lineaSalida, string* lineaDestino)
+int Red::CalcularTiempo(string* estSalida, string* estDestino)
 {
+    for(short int i=0; Lineas[i]==EndLineas; i++)
+    {
+        if(Lineas[i].Buscarestacion(estSalida) == true)
+        {
+            if(Lineas[i].Buscarestacion(estDestino) == true)
+            {
+                return Linea[i].TmpEntre(estSalida, estDestino);
+            }
+        }
+    }
 
+    if((*EndLineas).Buscarestacion(estSalida) == true)
+    {
+        if((*EndLineas).Buscarestacion(estDestino) == true)
+        {
+            return (*EndLineas).TmpEntre(estSalida, estDestino);
+        }
+    }
+
+    return -1;
 }
 
 Red::~Red()
 {
-
+    delete[] Lineas;
 }

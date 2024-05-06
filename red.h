@@ -22,7 +22,7 @@ public:
     void AddLinea(Linea* linea, string* estacionTransferencia);
     void DelLinea(string* linea);
     short int CuantasLineas(void);
-    int CalcularTiempo(string* lineaSalida, string* lineaDestino);
+    int CalcularTiempo(string* estSalida, string* estDestino);
     ~Red();
 };
 

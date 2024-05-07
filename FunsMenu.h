@@ -4,6 +4,7 @@
 #include "red.h"
 
 void Menu(void);
+void LimpiarTerminal(void);
 void IniciarRed(red* Red);
 void AgregarEstLinea(red* Red);
 void EliminarEstacion(red* Red);

@@ -5,17 +5,12 @@ red::red(string* nombre)
     Nombre = *nombre;
 
     Lineas = new linea[1];
-    Lineas[0] = linea(&nasda);
+    Lineas[0] = linea();
 
     EndLineas = &(Lineas[0]);
 }
 
-red::red(void)
-{
-    vacio =  true;
-}
-
-string red::getNombre(void)
+string red::GetNombre(void)
 {
     return Nombre;
 }
@@ -131,25 +126,25 @@ bool red::Transferencia(string* linea)
 
 void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER QUE LA ESATACIÓN SEA DE TRANFERENCIA EN LAS DEMAS LINEAS.
 {
-    if(Lineas[0].EsVacio == true)
+    if(Lineas[0].EsVacio() == true)
     {
         Lineas[0] = *Linea;
         return;
     }
-    
+
     string Aux = estacionTransferencia->GetNombre();
 
     for(short int i=0; &(Lineas[i])==EndLineas; i++)
     {
         if(Lineas[i].BuscarEstacion(&Aux) == true)
         {
-            Lineas[i].NombreTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
+            Lineas[i].NombreTransferencia(&Aux); //CONVERTIR A TRANSFERENCIA
         }
     }
 
     if((*EndLineas).BuscarEstacion(&Aux) == true)
     {
-        (*EndLineas).NombreTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
+        (*EndLineas).NombreTransferencia(&Aux); //CONVERTIR A TRANSFERENCIA
     }
 
     Aux = "-1";
@@ -165,9 +160,9 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
                     Lineas[i] = *Linea;
                     Lineas[i].AddEstacion(estacionTransferencia, &Aux);
 
-                    Aux = estacionTransferencia.GetNombre();
+                    Aux = (*estacionTransferencia).GetNombre();
 
-                    Lineas[i].NombreTranferencia(&Aux);
+                    Lineas[i].NombreTransferencia(&Aux);
 
                     Transferencias++;
 
@@ -180,9 +175,9 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
                 Lineas[i+1] = *Linea;
                 Lineas[i+1].AddEstacion(estacionTransferencia, &Aux);
 
-                Aux = estacionTransferencia.GetNombre();
+                Aux = (*estacionTransferencia).GetNombre();
 
-                Lineas[i+1].NombreTranferencia(estacionTransferencia);
+                Lineas[i+1].NombreTransferencia(&Aux);
 
                 Transferencias++;
 
@@ -212,9 +207,9 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
         AuxLineas[contador] = *Linea;
         AuxLineas[contador].AddEstacion(estacionTransferencia, &Aux);
 
-        Aux = estacionTransferencia.GetNombre();
+        Aux = (*estacionTransferencia).GetNombre();
 
-        AuxLineas[contador].NombreTranferencia(&Aux);
+        AuxLineas[contador].NombreTransferencia(&Aux);
 
         Transferencias++;
 
@@ -322,6 +317,24 @@ short int red::CantidadLineas(void)
     return contador;
 }
 
+int red::CantdadEstLinea(string* Linea)
+{
+    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    {
+        if(Lineas[i].GetNombre() == *Linea)
+        {
+            return Lineas[i].CuantasEstaciones();
+        }
+    }
+
+    if((*EndLineas).GetNombre() == *Linea)
+    {
+        return (*EndLineas).CuantasEstaciones();
+    }
+
+    return false;
+}
+
 short int red::CantidadEstaciones(void)
 {
     short int contador = 0;
@@ -374,5 +387,4 @@ int red::CalcularTiempo(string* estSalida, string* estDestino)
 red::~red()
 {
     delete[] Lineas;
-    delete[] Transferencias;
 }

@@ -12,7 +12,7 @@ void Menu()
     do
     {
         cout << "Gestion de red metro " << (*Red).GetNombre() << ". Seleccione entre: " <<
-            "\n\n 1.Añadir estacion a una linea." <<
+            "\n\n 1.Aniadir estacion a una linea." <<
             "\n 2.Eliminar estacion asociada una linea." <<
             "\n 3.Saber cuantas lineas tiene la red." <<
             "\n 4.Saber cuantas estaciones tiene una linea." <<
@@ -21,7 +21,7 @@ void Menu()
             "\n 7.Eliminar una linea de la red." <<
             "\n 8.Saber cuantas estaciones tiene la red." <<
             "\n 9.Calcular tiempo entre estaciones" <<
-            "\n 10. Salir.";
+            "\n 10. Salir.\n\n ";
 
         cin >> opcion;
 
@@ -34,7 +34,7 @@ void Menu()
             }
             case 2:
             {
-                EliminarEstLinea(Red);
+                EliminarLinea(Red);
                 break;
             }
             case 3:
@@ -44,7 +44,7 @@ void Menu()
             }
             case 4:
             {
-                CantEstLineas(Red);
+                CantEstLinea(Red);
                 break;
             }
             case 5:
@@ -79,11 +79,11 @@ void Menu()
             }
             default:
             {
-            LimpiarTerminal();
-            cout << "\n*** La opcion ingresada es invalida ***\n\n";
+                LimpiarTerminal();
+                cout << "\n*** La opcion ingresada es invalida ***\n\n";
             }
         }
-            
+
     }while(opcion != 10);
 
     return;
@@ -96,9 +96,10 @@ void LimpiarTerminal(void)
 
 void IniciarRed(red* Red)
 {
-    string Nombre = "Ejemplo"
+    string Nombre = "Ejemplo";
     Red = new red(&Nombre);
 
+    return;
 }
 
 void AgregarEstLinea(red* Red)
@@ -110,9 +111,9 @@ void AgregarEstLinea(red* Red)
     LimpiarTerminal();
 
     cout << "Agregar estacion a una linea\n\n Ingrese la linea a la que quiere ingresar la estacion: ";
-    getline(cin, Linea);
+    getline(cin >> ws, Linea);
 
-    if((*Red).ExisteLinea() == true)
+    if((*Red).ExisteLinea(&Linea) == true)
     {
         cout << " Ingrese el nombre de la nueva estacion: ";
         getline(cin, Estacion);
@@ -122,24 +123,24 @@ void AgregarEstLinea(red* Red)
             cout << " Ingrese el nombre de la estacion previa,'-1' si es extremo izquierdo o '1' si es extremo derecho: ";
             getline(cin, EstAnt);
 
-            if(estAnt !="-1" || estAnt != "1")
+            if(EstAnt !="-1" || EstAnt != "1")
             {
                 cout << " Ingrese el tiempo a la estacion conexa: ";
-                
+
                 if(EstAnt == "-1")
                 {
-                    cin << TiempoSig;
+                    cin >> TiempoSig;
                     TiempoAnt = -1;
                 }
                 else
                 {
-                    cin << TiempoAnt;
+                    cin >> TiempoAnt;
                     TiempoSig = -1;
                 }
 
                 NuevaEstacion = new estacion(&TiempoSig, &TiempoAnt, &Estacion);
 
-                (*Red).AgregarEstacion(&Linea, &NuevaEstacion, &EstAnt);
+                (*Red).AgregarEstacion(&Linea, NuevaEstacion, &EstAnt);
 
                 return;
             }
@@ -148,11 +149,11 @@ void AgregarEstLinea(red* Red)
                 cout << " Ingrese el tiempo a la estacion anterior: ";
                 cin >> TiempoAnt;
                 cout << " Ingrese el tiempo a la estacion siguiente: ";
-                cin >> TiempoSig >> ws;
+                cin >> TiempoSig;
 
                 NuevaEstacion = new estacion(&TiempoAnt, &TiempoSig, &Estacion);
 
-                (*Red).AgregarEstacion(&Linea, &NuevaEstacion, &EstAnt);
+                (*Red).AgregarEstacion(&Linea, NuevaEstacion, &EstAnt);
 
                 LimpiarTerminal();
                 cout << "*** Estacion " << Estacion << " agregada con exito en la linea" << Linea << " ***\n";
@@ -184,7 +185,7 @@ void AgregarEstLinea(red* Red)
 void EliminarEstLinea(red* Red)
 {
     string Linea, Estacion;
-    
+
     cout << "Eliminar una estacion de una linea\n\n Ingrese la linea sobre la que se encuentra la estacion: ";
     getline(cin, Linea);
 
@@ -192,16 +193,16 @@ void EliminarEstLinea(red* Red)
     {
         cout << " Ingrese el nombre de la estacion que desea eliminar: ";
         getline(cin, Estacion);
-    
+
         if((*Red).EstacionEnLinea(&Estacion, &Linea) == true)
         {
             if((*Red).EsTransferencia(&Estacion) == false)
             {
-                BorrarEstacion(&Linea, &Estacion);
+                (*Red).BorrarEstacion(&Linea, &Estacion);
 
                 LimpiarTerminal();
                 cout << "*** Estacion " << Estacion << " eliminada con exito de la linea" << Linea << " ***\n";
-                
+
                 return;
             }
             else
@@ -229,11 +230,11 @@ void EliminarEstLinea(red* Red)
 void CantLineas(red*Red)
 {
     char aux;
-    
+
     LimpiarTerminal();
 
     cout << "*** La red tiene " << (*Red).CantidadLineas() << " lineas ***\n";
-    cin << aux << ws;
+    cin >> aux;
 
     LimpiarTerminal();
 
@@ -243,7 +244,7 @@ void CantLineas(red*Red)
 void CantEstLinea(red* Red)
 {
     string Linea;
-    
+
     LimpiarTerminal();
 
     cout << "Saber cuantas estaciones tiene una linea\n\n Ingrese el nombre de la linea: ";
@@ -251,14 +252,14 @@ void CantEstLinea(red* Red)
 
     if((*Red).ExisteLinea(&Linea) == true)
     {
-        cout << "***\n Hay " << (Red).EstacionesLinea(&Linea) << " en la linea " << Linea << " ***\n";
-        cin << Linea << ws;
+        cout << "***\n Hay " << (*Red).CantdadEstLinea(&Linea) << " en la linea " << Linea << " ***\n";
+        cin >> Linea;
         LimpiarTerminal();
         return;
     }
     else
     {
-        impiarTerminal();
+        LimpiarTerminal();
         cout << "*** La linea " << Linea << " no existe en la red ***\n";
         return;
     }
@@ -267,7 +268,7 @@ void CantEstLinea(red* Red)
 void EstLinea(red* Red)
 {
     string Linea, Estacion;
-    
+
     LimpiarTerminal();
 
     cout << "Saber si una estacion pertenece a una linea\n\n Ingrese el nombre de la estacion: ";
@@ -281,13 +282,13 @@ void EstLinea(red* Red)
         if((*Red).EstacionEnLinea(&Estacion, &Linea) == true)
         {
             cout << "***La estacion " << Estacion << " si pertenece a la linea " << Linea << " ***\n";
-            cin << Linea << ws;
+            cin >> Linea;
 
         }
         else
         {
             cout << "***La estacion " << Estacion << " no pertenece a la linea " << Linea << " ***\n";
-            cin << Linea << ws;
+            cin >> Linea ;
         }
 
         LimpiarTerminal();
@@ -316,10 +317,10 @@ void AniadirLinea(red* Red)
         cout << " Ingrese la estacion con la que se hara transferencia: ";
         getline(cin, EstacionTrans);
 
-        if((*Red).ExisteEstacion(&Estacion) == true)
+        if((*Red).ExisteEstacion(&EstacionTrans) == true)
         {
             NuevaLinea = new linea(&Linea);
-            EstacionT = new estacion(&Tiempo, &Tiempo, &Estacion);
+            EstacionT = new estacion(&Tiempo, &Tiempo, &EstacionTrans);
 
             (*Red).AddLinea(NuevaLinea, EstacionT);
 
@@ -334,7 +335,7 @@ void AniadirLinea(red* Red)
         else
         {
             LimpiarTerminal();
-            cout << "*** No se puede agregar la linea debido a que la estacion " << Estacion << " no existe en la red ***\n";
+            cout << "*** No se puede agregar la linea debido a que la estacion " << EstacionTrans << " no existe en la red ***\n";
             return;
         }
     }
@@ -378,11 +379,11 @@ void EliminarLinea(red* Red)
 void CantEst(red* Red)
 {
     char aux;
-    
+
     LimpiarTerminal();
 
     cout << "*** La red tiene " << (*Red).CantidadEstaciones() << " estaciones ***\n";
-    cin << aux << ws;
+    cin >> aux;
 
     LimpiarTerminal();
 
@@ -392,7 +393,7 @@ void CantEst(red* Red)
 void CalTmpLlegada(red* Red)
 {
     string EstacionSalida, EstacionLlegada;
-    
+
     LimpiarTerminal();
 
     cout << "Calcular tiempo entre dos estaciones \n\n Ingrese el nombre de la estacion de salida: ";
@@ -406,10 +407,13 @@ void CalTmpLlegada(red* Red)
         if((*Red).ExisteEstacion(&EstacionLlegada) == true)
         {
             LimpiarTerminal();
-            cout << " Tiempo de salida de la estacion " << EstacionSalida << ": " << void SumarTiempo(0);
-            cout << "Tiempo de llegada estimado a la estacion " << EstacionLlegada << ": " << void SumarTiempo((*Red).CalcularTiempo(&EstacionSalida, &EstacionLlegada)) << "\n\n";
- 
-            cin << EstacionSalida;
+            cout << " Tiempo de salida de la estacion " << EstacionSalida << ": ";
+            SumarTiempo(0);
+            cout << "Tiempo de llegada estimado a la estacion " << EstacionLlegada << ": ";
+            SumarTiempo((*Red).CalcularTiempo(&EstacionSalida, &EstacionLlegada));
+            cout << "\n\n";
+
+            cin >> EstacionSalida;
 
             return;
         }
@@ -428,12 +432,12 @@ void CalTmpLlegada(red* Red)
     }
 }
 
-void SumarTiempo(int Adicional) 
+void SumarTiempo(int Adicional)
 {
     time_t now = time(0);
     tm* TiempoActual = localtime(&now);
 
-    TiempoActual->tm_min += Adicional; 
+    TiempoActual->tm_min += Adicional;
 
     if (TiempoActual->tm_min >= 60) {
         TiempoActual->tm_min -= 60;
@@ -447,6 +451,6 @@ void SumarTiempo(int Adicional)
     now = mktime(TiempoActual);
 
     cout << TiempoActual->tm_hour << ":" << TiempoActual->tm_min << ":" << TiempoActual->tm_sec;
-    
+
     return;
 }

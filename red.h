@@ -13,8 +13,7 @@ private:
 
 public:
     red(string* nombre);
-    red(void);
-    string getNombre(void);
+    string GetNombre(void);
     void SetNombre(string* nombre);
     bool ExisteLinea(string* linea);
     bool ExisteEstacion(string* estacion);
@@ -26,6 +25,7 @@ public:
     void AgregarEstacion(string* linea, estacion* Estacion, string* estAnt);
     void BorrarEstacion(string* linea, string* estacion);
     short int CantidadLineas(void);
+    int CantdadEstLinea(string* Linea);
     short int CantidadEstaciones(void);
     int CalcularTiempo(string* estSalida, string* estDestino);
     ~red();

@@ -1,18 +1,20 @@
 #include "estacion.h"
-#include "linea.h"
 
-estacion::estacion()
-{
-    Vacio=true;
+estacion::estacion() {
+    Vacio = true;
 }
+
 estacion::estacion(int *tiemposig, int *tiempoant, string *nombre) {
     Tiemposiguiente = *tiemposig;
     Tiempoanterior = *tiempoant;
     Nombre = *nombre;
+    Vacio = false;
 }
+
 void estacion::SetTiempoAnterior(int *tiempoant) {
-    Nombre = *tiempoant;
+    Tiempoanterior = *tiempoant;
 }
+
 void estacion::SetNombre(string *nombre) {
     Nombre = *nombre;
 }
@@ -41,26 +43,18 @@ bool estacion::GetTransferencia() {
     return Transferencia;
 }
 
-string estacion::NombreOriginal()
-{
-    string NombreOriginal;
+string estacion::NombreOriginal() {
     size_t posicionGuion = Nombre.find("-");
-
-    if (posicionGuion != string::npos)
-    {
-        NombreOriginal=Nombre.substr(0, posicionGuion);
+    if (posicionGuion != string::npos) {
+        return Nombre.substr(0, posicionGuion);
     }
-    return NombreOriginal;
+    return Nombre; // Si no se encuentra un guion, simplemente devolvemos el nombre original
 }
-bool estacion::EsVacio()
-{
-    if (Vacio == false)
-    {
-        return false;
-    }
-    return true;
+
+bool estacion::EsVacio() {
+    return Vacio; // Devolvemos directamente el valor de Vacio
 }
 
 estacion::~estacion() {
-    // Destructor de Estacion
+    // Destructor de estacion
 }

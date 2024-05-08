@@ -1,22 +1,30 @@
 #include "linea.h"
 #include "estacion.h"
 
-linea::linea(string *nombre) {
+linea::linea()
+{
+    Linea = nullptr;
+    fin = nullptr;
+    Vacio=true;
+}
+
+linea::linea(string *nombre)
+{
     Nombre = *nombre;
     Linea = new estacion[2];
-    fin = &Linea[1];
+    Linea[0] = estacion();
+    Linea[1] = estacion();
+    fin=&Linea[1];
 }
+
 string linea::GetNombre() {
     return Nombre;
 }
-estacion linea::GetFin(){
+
+estacion linea::GetFin() {
     return *fin;
 }
 
-void linea::SetVacioLinea()
-{
-    Vacio=true;
-}
 
 void linea::SetNombre(string *nombre)
 {
@@ -28,31 +36,47 @@ void linea::SetFin(estacion *nuevadireccion)
     fin = nuevadireccion;
 }
 
-void linea::SetNombreTransferencia(string* nombre){
+void linea::NombreTransferencia(string* nombre)
+{
     estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
     string nuevonombre;
     bool transferencia=true;
-    while (puntero != nullptr) {
-        if (puntero->GetNombre() == *nombre) { // Compara el nombre de la estación actual con el nombre buscado
+
+    while (puntero != fin) {
+        if (puntero->GetNombre() == *nombre)
+        {                                                       // Compara el nombre de la estación actual con el nombre buscado
             nuevonombre= puntero->GetNombre();
             nuevonombre+="-";
-            nuevonombre+=Linea->GetNombre();
+            nuevonombre+=Nombre;
             puntero->SetNombre(&nuevonombre);
             puntero->SetTransferencia(&transferencia);
-            break;
         }
-        puntero += 1; // Avanza al siguiente elemento del arreglo
+        puntero += 1;                                            // Avanza al siguiente elemento del arreglo
     }
 
+    if (puntero->GetNombre() == *nombre)
+    {                                                       // Compara el nombre de la estación actual con el nombre buscado
+        nuevonombre= puntero->GetNombre();
+        nuevonombre+="-";
+        nuevonombre+=Nombre;
+        puntero->SetNombre(&nuevonombre);
+        puntero->SetTransferencia(&transferencia);
+    }
 }
+
 bool linea::TieneTransferencia()
 {
     estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
-    while (puntero != nullptr) {
+
+    while (puntero != fin) {
         if (puntero->GetTransferencia()) { // Verifica si la estación actual tiene transferencia
             return true; // Si una estación tiene transferencia, retorna verdadero
         }
         puntero +=1; // Avanza al siguiente elemento del arreglo
+    }
+
+    if (puntero->GetTransferencia()) { // Verifica si la estación actual tiene transferencia
+        return true; // Si una estación tiene transferencia, retorna verdadero
     }
     return false; // Si ninguna estación tiene transferencia, retorna falso
 }
@@ -60,69 +84,102 @@ bool linea::TieneTransferencia()
 bool linea::BuscarEstacion( string *nombreEstacion)
 {
     estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
-    while (puntero != nullptr) {
+
+    while (puntero != fin)
+    {
         if (puntero->GetNombre() == *nombreEstacion) { // Compara el nombre de la estación actual con el nombre buscado
             return true; // Si encuentra la estación, retorna verdadero
         }
         puntero += 1; // Avanza al siguiente elemento del arreglo
+    }
+
+    if (puntero->GetNombre() == *nombreEstacion) { // Compara el nombre de la estación actual con el nombre buscado
+        return true; // Si encuentra la estación, retorna verdadero
     }
     return false; // Si no encuentra la estación, retorna falso
 }
 
 int linea::CuantasEstaciones()
 {
-    estacion **puntero = &Linea; // Inicializa el puntero al principio del arreglo
+    estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
     int contador = 0;
-    while (*puntero != nullptr) {
-        ++contador;
+
+    while (puntero != fin ) {
+        if(puntero->EsVacio()== false)
+        {
+            ++contador;
+        }
         puntero += 1;
     }
+
+    if(puntero->EsVacio()== false)
+    {
+        ++contador;
+    }
+
     return contador;
 }
 
-void linea::DeltEstacion(string *nombre) {
-    for (int short i=0;i < CuantasEstaciones();i++)
+void linea::DeltEstacion(string *nombre)
+{
+    estacion* puntero=Linea;
+    while(puntero != fin)
     {
-        if(Linea[i].GetNombre() == *nombre)
+        if(puntero->GetNombre() == *nombre)
         {
-            if(Linea[i+1].EsVacio() == true)
-            {
-                Linea[i].~estacion();
-                Linea[i]=estacion();
-            }
-            else
-            {
-                Linea[i].~estacion();
-                Linea[i]=estacion();
-                for (estacion* p = Linea + 1; p <= &Linea[CuantasEstaciones()-1]; ++p)
-                {
-                    *(p - 1) = *p;
-                }
-                Linea[CuantasEstaciones()-1].~estacion();
-                Linea[CuantasEstaciones()-1]=estacion();
-            }
+            MoverIzquierda(puntero,fin);
         }
+        puntero += 1;
+    }
+    if(puntero->GetNombre() == *nombre)
+    {
+        MoverIzquierda(puntero,fin);
+    }
+}
+void linea::MoverIzquierda(estacion* inicio, estacion* fin)
+{
+    // Mover los elementos una posición hacia la izquierda
+    estacion* ptr = inicio;
+    for (; ptr < fin; ++ptr)
+    {
+        *(ptr) = *(ptr + 1);
+    }
+    ptr->~estacion();
+    *ptr=estacion();
+}
+
+void linea::MoverDerecha(estacion* inicio, estacion* fin)
+
+{
+    // Mover los elementos una posición hacia la derecha
+    for (estacion* ptr = fin; ptr > inicio; --ptr) {
+        *(ptr) = *(ptr - 1);
     }
 }
 
-void linea::AddEstacion(estacion* nuevaEstacion, string *estacionante) {
+void linea::AddEstacion(estacion* nuevaEstacion, string* estacionante) {
     int espaciosvacios = 0;
     int Tiemposiguiente, Tiempoanterior;
 
     // Verificar si el arreglo de estaciones está vacío
-    if (Linea == nullptr)
+    if (Linea->EsVacio() == true)
     {
-        Linea = nuevaEstacion; // Si está vacío, asigna la nueva estación como la primera de la línea
+        Linea[0] = *nuevaEstacion; // Si está vacío, asigna la nueva estación como la primera de la línea
+
     }
     else
     {
-        estacion **puntero = &Linea; // Inicializa el puntero al principio del arreglo
-        while (*puntero != fin) {
-            if((*puntero)->EsVacio()== true)
+        estacion* puntero =Linea; // Inicializa el puntero al principio del arreglo apuntando al primer elemento de arreglo
+        while (puntero != fin) {
+            if(puntero->EsVacio()== true)
             {
-            espaciosvacios+=1;
+                espaciosvacios+=1;
             }
             puntero += 1;
+        }
+        if(puntero->EsVacio()== true)
+        {
+            espaciosvacios+=1;
         }
         if (espaciosvacios != 0)
         {
@@ -130,41 +187,35 @@ void linea::AddEstacion(estacion* nuevaEstacion, string *estacionante) {
         }
         else
         {
-            short int contador = 0;
-            estacion* AuxEstaciones;
-
-            for(short int i=0; &Linea[i]!= fin; i++)
-            {
-                contador++;
-            }
-            contador++;
-            AuxEstaciones = new estacion[contador+2];
-            for(short int i=0; i<contador; i++)
-            {
+            int contador = CuantasEstaciones();
+            estacion* AuxEstaciones = new estacion[contador + 2];
+            for (int i = 0; i < contador; ++i) {
                 AuxEstaciones[i] = Linea[i];
             }
+            AuxEstaciones[contador+1]=estacion();
+            AuxEstaciones[contador]=estacion();
             delete[] Linea;
-            Linea= AuxEstaciones;
-            fin=&(AuxEstaciones[contador]);
+            Linea = AuxEstaciones;
+            fin = &AuxEstaciones[contador+1];
         }
 
         if (*estacionante == "-1")
         {
-            MoverDerecha(Linea,fin);
-            Linea[0]=*nuevaEstacion;
-            Tiempoanterior=Linea[0].GetTiempoSiguiente();
+            MoverDerecha(Linea, fin);
+            Linea[0] = *nuevaEstacion;
+            Tiempoanterior = Linea[0].GetTiempoSiguiente();
             Linea[1].SetTiempoAnterior(&Tiempoanterior);
         }
 
         else if (*estacionante == "1")
         {
-            for (int short i=0 ; i < CuantasEstaciones(); i++)
+            for (int i = 0; i <= CuantasEstaciones(); ++i)
             {
-                if(Linea[i].EsVacio()== true)
+                if (Linea[i].EsVacio() == true)
                 {
-                    Linea[i]=*nuevaEstacion;
-                    Tiempoanterior=nuevaEstacion->GetTiempoAnterior();
-                    Linea[i-1].SetTiempoSiguiente(&Tiempoanterior);
+                    Linea[i] = *nuevaEstacion;
+                    Tiempoanterior = nuevaEstacion->GetTiempoAnterior();
+                    Linea[i - 1].SetTiempoSiguiente(&Tiempoanterior);
                     break;
                 }
             }
@@ -172,27 +223,23 @@ void linea::AddEstacion(estacion* nuevaEstacion, string *estacionante) {
 
         else
         {
-            for (int short i=0 ; i < CuantasEstaciones(); i++)
+            for (int i = 0; i < CuantasEstaciones(); ++i)
             {
-                if(Linea[i].GetNombre() == *estacionante)
+                if (Linea[i].GetNombre() == *estacionante)
                 {
-                    Tiemposiguiente=nuevaEstacion->GetTiempoSiguiente();
-                    Tiempoanterior=nuevaEstacion->GetTiempoAnterior();
-                    MoverDerecha(&Linea[i+1],fin);
-                    Linea[i+1]=*nuevaEstacion;
+                    Tiemposiguiente = nuevaEstacion->GetTiempoSiguiente();
+                    Tiempoanterior = nuevaEstacion->GetTiempoAnterior();
+                    MoverDerecha(&Linea[i+1], fin);
+                    Linea[i+1] = *nuevaEstacion;
                     Linea[i].SetTiempoSiguiente(&Tiempoanterior);
-                    Linea[i+2].SetTiempoAnterior(&Tiemposiguiente);
+                    if(Linea[i+2].EsVacio() == false)
+                    {
+                        Linea[i+2].SetTiempoAnterior(&Tiemposiguiente);
+                    }
                 }
             }
         }
 
-    }
-}
-
-void linea::MoverDerecha(estacion* inicio, estacion* fin) {
-    // Mover los elementos una posición hacia la derecha
-    for (estacion* ptr = fin; ptr > inicio; --ptr) {
-        *(ptr) = *(ptr - 1);
     }
 }
 
@@ -208,7 +255,7 @@ bool linea::EsVacio()
 bool linea::EstacionTransferencia(string* nombre)
 {
     estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
-    while (puntero != nullptr) {
+    while (puntero->EsVacio() == false) {
         if (puntero->GetNombre() == *nombre) { // Compara el nombre de la estación actual con el nombre buscado
             if(puntero->GetTransferencia() == true)
             {
@@ -221,29 +268,44 @@ bool linea::EstacionTransferencia(string* nombre)
         }
         puntero += 1; // Avanza al siguiente elemento del arreglo
     }
+    if (puntero->GetNombre() == *nombre) {           // Compara el nombre de la estación actual con el nombre buscado
+        if(puntero->GetTransferencia() == true)
+        {
+            return true;                        // Si es transferencia retorna verdadero
+        }
+        else
+        {
+            return false;                           // Si no es tranferencia retorna falso
+        }
+    }
+
+    return false;
 }
 
 int linea::TmpEntre(string* estSalida, string* estDestino){
-    estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
     int cuenta=0;
-    while (puntero != nullptr)
+
+    for(int i=0; i<CuantasEstaciones();i++)
     {
-        if (puntero->GetNombre() == *estSalida) { // Compara el nombre de la estación actual con el nombre buscado
-            cuenta += puntero->GetTiempoSiguiente();
+        if ( Linea[i].GetNombre()== *estSalida)
+        {                                                                                   // Compara el nombre de la estación actual con el nombre buscado
+
+            cuenta += Linea[i].GetTiempoSiguiente();
+            for (int j=1;j<CuantasEstaciones()-i;i++)
+            {
+                cuenta += Linea[i+j].GetTiempoSiguiente();
+                if (Linea[i+j+1].GetNombre()== *estDestino)                                 //se crea un bluce para identificar la final y de ahi ya sale todo
+                {
+                    return cuenta;
+                }
+
+            }
         }
-        if(puntero->GetNombre() == *estDestino){
-            cuenta += puntero->GetTiempoAnterior();
-        }
-        else{
-            cuenta += puntero->GetTiempoSiguiente();
-        }
-        puntero += 1; // Avanza al siguiente elemento del arreglo
     }
     return cuenta;
 }
+
 linea::~linea() {
     // Destructor de linea
     // Aquí puedes liberar la memoria asignada a los nodos de la línea
 }
-
-

@@ -1,8 +1,3 @@
-#ifndef ESTACION_H
-#define ESTACION_H
-#include <iostream>
-#include <string>
-
 using namespace std;
 
 class estacion
@@ -10,7 +5,7 @@ class estacion
 private:
     int Tiemposiguiente, Tiempoanterior;
     string Nombre;
-    bool Transferencia;
+    bool Transferencia =false;
     bool Vacio=false;
 public:
     estacion(int *tiemposig, int *tiempoant, string *nombre);

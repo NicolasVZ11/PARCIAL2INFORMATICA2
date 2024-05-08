@@ -7,12 +7,13 @@ class red
 {
 private:
     string Nombre;
-    string* Transferencias;
+    short int Transferencias = 0;
     linea* Lineas;
     linea* EndLineas;
 
 public:
     red(string* nombre);
+    red(void);
     string getNombre(void);
     void SetNombre(string* nombre);
     bool ExisteLinea(string* linea);
@@ -24,8 +25,8 @@ public:
     void DelLinea(string* linea);
     void AgregarEstacion(string* linea, estacion* Estacion, string* estAnt);
     void BorrarEstacion(string* linea, string* estacion);
-    short int CuantasLineas(void);
-    short int CuantasEstaciones(void);
+    short int CantidadLineas(void);
+    short int CantidadEstaciones(void);
     int CalcularTiempo(string* estSalida, string* estDestino);
     ~red();
 };

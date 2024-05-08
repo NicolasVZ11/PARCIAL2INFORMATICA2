@@ -4,15 +4,15 @@ red::red(string* nombre)
 {
     Nombre = *nombre;
 
-    Transferencias = new string[3];
-    Transferencias[0] = nullptr;
-    Transferencias[1] = nullptr;
-    Transferencias[2] = nullptr;
-
     Lineas = new linea[1];
-    Lineas[0] = linea();
+    Lineas[0] = linea(&nasda);
 
     EndLineas = &(Lineas[0]);
+}
+
+red::red(void)
+{
+    vacio =  true;
 }
 
 string red::getNombre(void)
@@ -131,19 +131,25 @@ bool red::Transferencia(string* linea)
 
 void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER QUE LA ESATACIÓN SEA DE TRANFERENCIA EN LAS DEMAS LINEAS.
 {
+    if(Lineas[0].EsVacio == true)
+    {
+        Lineas[0] = *Linea;
+        return;
+    }
+    
     string Aux = estacionTransferencia->GetNombre();
 
     for(short int i=0; &(Lineas[i])==EndLineas; i++)
     {
         if(Lineas[i].BuscarEstacion(&Aux) == true)
         {
-            Lineas[i].HacerTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
+            Lineas[i].NombreTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
         }
     }
 
     if((*EndLineas).BuscarEstacion(&Aux) == true)
     {
-        (*EndLineas).HacerTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
+        (*EndLineas).NombreTranferencia(&Aux); //CONVERTIR A TRANSFERENCIA
     }
 
     Aux = "-1";
@@ -158,7 +164,13 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
                 {
                     Lineas[i] = *Linea;
                     Lineas[i].AddEstacion(estacionTransferencia, &Aux);
-                    Lineas[i].HacerTranferencia(estacionTransferencia);
+
+                    Aux = estacionTransferencia.GetNombre();
+
+                    Lineas[i].NombreTranferencia(&Aux);
+
+                    Transferencias++;
+
                     break;
                 }
             }
@@ -167,7 +179,13 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
             {
                 Lineas[i+1] = *Linea;
                 Lineas[i+1].AddEstacion(estacionTransferencia, &Aux);
-                Lineas[i+1].HacerTranferencia(estacionTransferencia);
+
+                Aux = estacionTransferencia.GetNombre();
+
+                Lineas[i+1].NombreTranferencia(estacionTransferencia);
+
+                Transferencias++;
+
                 break;
             }
         }
@@ -193,7 +211,12 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
 
         AuxLineas[contador] = *Linea;
         AuxLineas[contador].AddEstacion(estacionTransferencia, &Aux);
-        AuxLineas[contador].HacerTranferencia(estacionTransferencia);
+
+        Aux = estacionTransferencia.GetNombre();
+
+        AuxLineas[contador].NombreTranferencia(&Aux);
+
+        Transferencias++;
 
         delete[] Lineas;
         Lineas = AuxLineas;
@@ -274,7 +297,7 @@ void red::BorrarEstacion(string* linea, string* estacion)
     }
 }
 
-short int red::CuantasLineas(void)
+short int red::CantidadLineas(void)
 {
     short int contador = 0;
 
@@ -299,9 +322,29 @@ short int red::CuantasLineas(void)
     return contador;
 }
 
-short int red::CuantasEstaciones(void)
+short int red::CantidadEstaciones(void)
 {
-    //Continuar
+    short int contador = 0;
+
+    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    {
+        if(i==0)
+        {
+            if(Lineas[i].EsVacio() != false)
+            {
+                contador += Lineas[i].CuantasEstaciones();
+            }
+        }
+
+        if(Lineas[i+1].EsVacio() != false)
+        {
+            contador += Lineas[i].CuantasEstaciones();
+        }
+    }
+
+    contador -= Transferencias;
+
+    return contador;
 }
 
 int red::CalcularTiempo(string* estSalida, string* estDestino)

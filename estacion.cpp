@@ -58,3 +58,4 @@ bool estacion::EsVacio() {
 estacion::~estacion() {
     // Destructor de estacion
 }
+

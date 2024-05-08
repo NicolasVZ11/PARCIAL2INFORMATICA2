@@ -1,4 +1,3 @@
-#ifndef LINEA_H
 #define LINEA_H
 #include "estacion.h"
 using namespace std;

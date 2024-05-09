@@ -1,6 +1,7 @@
+#ifndef LINEA_H
 #define LINEA_H
+
 #include "estacion.h"
-using namespace std;
 
 class linea
 {
@@ -21,7 +22,7 @@ public:
     bool TieneTransferencia();
     bool BuscarEstacion(string* nombreEstacion);
     int CuantasEstaciones();
-    void DeltEstacion(string*nombre);
+    void DeltEstacion(string *nombre, int* tiempo);
     void AddEstacion(estacion* NuevaEstacion, string* estacionante);
     void MoverIzquierda(estacion* inicio, estacion* fin);
     void MoverDerecha(estacion* inicio, estacion* fin);

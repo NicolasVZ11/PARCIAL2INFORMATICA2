@@ -81,7 +81,7 @@ bool linea::TieneTransferencia()
     return false; // Si ninguna estación tiene transferencia, retorna falso
 }
 
-bool linea::BuscarEstacion( string *nombreEstacion)
+bool linea::BuscarEstacion(string *nombreEstacion)
 {
     estacion *puntero = Linea; // Inicializa el puntero al principio del arreglo
 
@@ -120,19 +120,23 @@ int linea::CuantasEstaciones()
     return contador;
 }
 
-void linea::DeltEstacion(string *nombre)
+void linea::DeltEstacion(string *nombre, int* tiempo)
 {
     estacion* puntero=Linea;
     while(puntero != fin)
     {
         if(puntero->GetNombre() == *nombre)
         {
+            (puntero+1)->SetTiempoAnterior(tiempo);
+            (puntero-1)->SetTiempoSiguiente(tiempo);
             MoverIzquierda(puntero,fin);
         }
         puntero += 1;
     }
     if(puntero->GetNombre() == *nombre)
     {
+        (puntero+1)->SetTiempoAnterior(tiempo);
+        (puntero-1)->SetTiempoSiguiente(tiempo);
         MoverIzquierda(puntero,fin);
     }
 }
@@ -291,7 +295,8 @@ int linea::TmpEntre(string* estSalida, string* estDestino){
         {                                                                                   // Compara el nombre de la estación actual con el nombre buscado
 
             cuenta += Linea[i].GetTiempoSiguiente();
-            for (int j=1;j<CuantasEstaciones()-i;i++)
+
+            for (int j=1;Linea[i+j].GetNombre()!=*estDestino;j++)
             {
                 cuenta += Linea[i+j].GetTiempoSiguiente();
                 if (Linea[i+j+1].GetNombre()== *estDestino)                                 //se crea un bluce para identificar la final y de ahi ya sale todo
@@ -300,6 +305,23 @@ int linea::TmpEntre(string* estSalida, string* estDestino){
                 }
 
             }
+            return cuenta;
+        }
+        else if (Linea[i].GetNombre()== *estDestino)
+        {                                                                                   // Compara el nombre de la estación actual con el nombre buscado
+
+            cuenta += Linea[i].GetTiempoSiguiente();
+
+            for (int j=1;Linea[i+j].GetNombre()!=*estSalida;j++)
+            {
+                cuenta += Linea[i+j].GetTiempoSiguiente();
+
+                if (Linea[i+j+1].GetNombre()== *estSalida)                                 //se crea un bluce para identificar la final y de ahi ya sale todo
+                {
+                    return cuenta;
+                }
+            }
+            return cuenta;
         }
     }
     return cuenta;

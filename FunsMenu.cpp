@@ -73,6 +73,7 @@ void Menu()
         case 10:
         {
             LimpiarTerminal();
+            delete Red;
             break;
         }
         default:

@@ -23,7 +23,7 @@ public:
     void AddLinea(linea* Linea, estacion* estacionTransferencia);
     void DelLinea(string* linea);
     void AgregarEstacion(string* linea, estacion* Estacion, string* estAnt);
-    void BorrarEstacion(string* linea, string* estacion);
+    void BorrarEstacion(string* linea, string* estacion, int* tiempo);
     short int CantidadLineas(void);
     int CantdadEstLinea(string* Linea);
     short int CantidadEstaciones(void);

@@ -22,7 +22,7 @@ void red::SetNombre(string* nombre)
 
 bool red::ExisteLinea(string* linea)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *linea)
         {
@@ -40,17 +40,21 @@ bool red::ExisteLinea(string* linea)
 
 bool red::ExisteEstacion(string* estacion)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
-        if(Lineas[i].BuscarEstacion(estacion) == true)
-        {
-            return true;
+        if(Lineas[i].EsVacio() != true){
+            if(Lineas[i].BuscarEstacion(estacion) == true)
+            {
+                return true;
+            }
         }
     }
 
-    if((*EndLineas).BuscarEstacion(estacion) == true)
-    {
-        return true;
+    if((*EndLineas).EsVacio() != true){
+        if((*EndLineas).BuscarEstacion(estacion) == true)
+        {
+            return true;
+        }
     }
 
     return false;
@@ -58,7 +62,7 @@ bool red::ExisteEstacion(string* estacion)
 
 bool red::EstacionEnLinea(string* estacion, string* linea)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *linea)
         {
@@ -90,7 +94,7 @@ bool red::EstacionEnLinea(string* estacion, string* linea)
 
 bool red::EsTransferencia(string* estacion)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].BuscarEstacion(estacion) == true)
         {
@@ -108,7 +112,7 @@ bool red::EsTransferencia(string* estacion)
 
 bool red::Transferencia(string* linea)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *linea)
         {
@@ -126,15 +130,19 @@ bool red::Transferencia(string* linea)
 
 void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER QUE LA ESATACIÓN SEA DE TRANFERENCIA EN LAS DEMAS LINEAS.
 {
+    string Aux = "-1";
+
     if(Lineas[0].EsVacio() == true)
     {
+        Lineas[0].~linea();
         Lineas[0] = *Linea;
+        Lineas[0].AddEstacion(estacionTransferencia, &Aux);
         return;
     }
 
-    string Aux = estacionTransferencia->GetNombre();
+    Aux = estacionTransferencia->GetNombre();
 
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].BuscarEstacion(&Aux) == true)
         {
@@ -151,7 +159,7 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
 
     if((*EndLineas).EsVacio() == true)
     {
-        for(short int i=0; &(Lineas[i])==EndLineas; i++)
+        for(short int i=0; &(Lineas[i])!=EndLineas; i++)
         {
             if(i==0)
             {
@@ -190,7 +198,7 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
         short int contador = 0;
         linea* AuxLineas;
 
-        for(short int i=0; &(Lineas[i])==EndLineas; i++)
+        for(short int i=0; &(Lineas[i])!=EndLineas; i++)
         {
             contador++;
         }
@@ -221,7 +229,7 @@ void red::AddLinea(linea* Linea, estacion* estacionTransferencia) //FALTA HACER 
 
 void red::DelLinea(string* Linea)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(i==0)
         {
@@ -229,7 +237,7 @@ void red::DelLinea(string* Linea)
             {
                 Lineas[i].~linea();
 
-                for(short int j=i; &(Lineas[j])==EndLineas; i++)
+                for(short int j=i; &(Lineas[j])!=EndLineas; i++)
                 {
                     Lineas[j] = Lineas[j+1];
                 }
@@ -245,7 +253,7 @@ void red::DelLinea(string* Linea)
         {
             Lineas[i+1].~linea();
 
-            for(short int j=(i+1); &(Lineas[j])==EndLineas; i++)
+            for(short int j=(i+1); &(Lineas[j])!=EndLineas; i++)
             {
                 Lineas[j] = Lineas[j+1];
             }
@@ -260,35 +268,36 @@ void red::DelLinea(string* Linea)
 
 void red::AgregarEstacion(string* linea, estacion* Estacion, string* estAnt)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *linea)
         {
             Lineas[i].AddEstacion(Estacion, estAnt);
-            break;
+            return;
         }
     }
 
     if((*EndLineas).GetNombre() == *linea)
     {
         (*EndLineas).AddEstacion(Estacion, estAnt);
+        return;
     }
 }
 
-void red::BorrarEstacion(string* linea, string* estacion)
+void red::BorrarEstacion(string* linea, string* estacion, int* tiempo)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *linea)
         {
-            Lineas[i].DeltEstacion(estacion);
+            Lineas[i].DeltEstacion(estacion, tiempo);
             break;
         }
     }
 
     if((*EndLineas).GetNombre() == *linea)
     {
-        (*EndLineas).DeltEstacion(estacion);
+        (*EndLineas).DeltEstacion(estacion, tiempo);
     }
 }
 
@@ -296,30 +305,28 @@ short int red::CantidadLineas(void)
 {
     short int contador = 0;
 
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(i==0)
         {
-            if(Lineas[i].EsVacio() != false)
+            if(Lineas[i].EsVacio() == false)
             {
                 contador++;
             }
         }
 
-        if(Lineas[i+1].EsVacio() != false)
+        if(Lineas[i+1].EsVacio() == false)
         {
             contador++;
         }
     }
-
-    contador++;
 
     return contador;
 }
 
 int red::CantdadEstLinea(string* Linea)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].GetNombre() == *Linea)
         {
@@ -339,19 +346,19 @@ short int red::CantidadEstaciones(void)
 {
     short int contador = 0;
 
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(i==0)
         {
-            if(Lineas[i].EsVacio() != false)
+            if(Lineas[i].EsVacio() == false)
             {
                 contador += Lineas[i].CuantasEstaciones();
             }
         }
 
-        if(Lineas[i+1].EsVacio() != false)
+        if(Lineas[i+1].EsVacio() == false)
         {
-            contador += Lineas[i].CuantasEstaciones();
+            contador += Lineas[i+1].CuantasEstaciones();
         }
     }
 
@@ -362,7 +369,12 @@ short int red::CantidadEstaciones(void)
 
 int red::CalcularTiempo(string* estSalida, string* estDestino)
 {
-    for(short int i=0; &(Lineas[i])==EndLineas; i++)
+    if((*estSalida) == (*estDestino))
+    {
+        return 0;
+    }
+
+    for(short int i=0; &(Lineas[i])!=EndLineas; i++)
     {
         if(Lineas[i].BuscarEstacion(estSalida) == true)
         {

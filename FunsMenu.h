@@ -5,9 +5,10 @@
 
 void Menu(void);
 void LimpiarTerminal(void);
-void IniciarRed(red* Red);
+red* IniciarRed();
+void PrimeraLinea(red* Red);
 void AgregarEstLinea(red* Red);
-void EliminarEstacion(red* Red);
+void EliminarEstLinea(red* Red);
 void CantLineas(red*Red);
 void CantEstLinea(red* Red);
 void EstLinea(red* Red);
